@@ -1,0 +1,21 @@
+body {
+	background: black;
+    height: 100%;
+    width: 100%;
+}
+
+.firework {
+	height: 10px;
+	width: 5px;
+	background: #333;
+	border-top-right-radius: 50%;
+	border-top-left-radius: 50%;
+}
+
+.explosion {
+	opacity: 1;
+	-webkit-transition: opacity 4s ease-in, top 4s ease-in;
+	-moz-transition: opacity 4s ease-in, top 4s ease-in;
+	-ms-transition: opacity 4s ease-in, top 4s ease-in;
+	transition: opacity 4s ease-in, top 4s ease-in;
+}
