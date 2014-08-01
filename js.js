@@ -3,7 +3,8 @@ var CIRCLE = Math.PI * 2,
 	WIND = -1,
 	MAX_DRAW_DELAY = 50,
 	MAX_RAYS = 15,
-	MAX_EXPLOSION_LAYERS = 5;
+	MAX_EXPLOSION_LAYERS = 5,
+	PARTICLE_SIZE = 2;
 
 function FireworksCelebration(){
 	this.fireworks = [];
@@ -172,7 +173,7 @@ function ExplosionRay(ctx,height,width,angle,duration,color){
 	function updateRayPosition(x,y,opacity,momentum,when){
 		setTimeout(function(){
 			ctx.globalAlpha = opacity;
-			ctx.fillRect(x + (WIND * momentum),y + (GRAVITY * momentum ) ,2,2);
+			ctx.fillRect(x + (WIND * momentum),y + (GRAVITY * momentum ) ,PARTICLE_SIZE,PARTICLE_SIZE);
 		},when);
 	}
 }
@@ -230,4 +231,10 @@ $('#max-layers')
 	.val(MAX_EXPLOSION_LAYERS)
 	.on('change',function(){
 		MAX_EXPLOSION_LAYERS = this.value;
+	});
+	
+$('#particle-size')
+	.val(PARTICLE_SIZE)
+	.on('change',function(){
+		PARTICLE_SIZE = this.value;
 	});
