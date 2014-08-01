@@ -6,7 +6,7 @@ function FireworksCelebration(){
 }
 
 FireworksCelebration.prototype.create = function(){
-	for(var i = 0; i<50; i++){
+	for(var i = 0; i<1000; i++){
 		this.fireworks.push(new Firework());
 	}
 	return this;
@@ -16,7 +16,7 @@ FireworksCelebration.prototype.start = function(){
 	this.fireworks.forEach(function(firework,i){
 		setTimeout(function(){
 			firework.launch();
-		},(i * 2000 * Math.random() ));
+		},(i * 3500 * Math.random() ));
 		
 	});
 	return this;
