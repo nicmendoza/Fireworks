@@ -1,12 +1,16 @@
 var CIRCLE = Math.PI * 2,
-	GRAVITY = 25; // amount to drop per frame drawn (exagerated when there is little time between frames)
+	GRAVITY = 15, // amount to drop per frame drawn (exagerated when there is little time between frames)
+	WIND = -1,
+	MAX_DRAW_DELAY = 50,
+	MAX_RAYS = 15,
+	MAX_EXPLOSION_LAYERS = 5;
 
 function FireworksCelebration(){
 	this.fireworks = [];
 }
-
+//todo: have this not create DOM elements for the fireworks until they are ready to launch
 FireworksCelebration.prototype.create = function(){
-	for(var i = 0; i<1000; i++){
+	for(var i = 0; i<100; i++){
 		this.fireworks.push(new Firework());
 	}
 	return this;
@@ -44,7 +48,6 @@ function Firework(){
 		.addClass('firework')
 		.css({
 			opacity: 0,
-			color: 'blue',
 			position: 'absolute',
 			top: window.outerHeight,
 			left: leftOffset,
@@ -72,8 +75,8 @@ Firework.prototype.launch = function(){
 	// after flight time, trigger explosion and destroy element
 	setTimeout(function(){
 		var position = self.$ele.offset();
-		new LayeredExplosion(position.left,position.top);
 		self.destroy();
+		new LayeredExplosion(position.left,position.top);
 	},self.flightTime);
 	
 };
@@ -83,9 +86,7 @@ Firework.prototype.update = function(){
 };
 
 Firework.prototype.destroy = function(){
-	var self = this;
-
-	self.$ele.remove();
+	this.$ele.remove();
 	return this;
 };
 
@@ -98,13 +99,19 @@ function Explosion(x,y,width,height,rays){
 	this.rays = rays;
 	this.color = '#'+Math.floor(Math.random()*16777215).toString(16);
 	this.duration = Math.floor(Math.random() * 750, 200);
+	this.fade = 4; // seconds
 
 	this.$ele = $('<canvas />')
 		.addClass('explosion')
 		.css({
 			position: 'absolute',
 			top: y,
-			left: x
+			left: x,
+			'-webkit-transition': 'opacity 4s ease-in, top ' + this.fade + 's ease-in',
+			'-moz-transition': 'opacity 4s ease-in, top ' + this.fade + 's ease-in',
+			'-ms-transition': 'opacity 4s ease-in, top ' + this.fade + 's ease-in',
+			transition: 'opacity 4s ease-in, top ' + this.fade + 's ease-in',
+			opacity: 1
 		})
 		.appendTo('body');
 
@@ -132,11 +139,17 @@ function Explosion(x,y,width,height,rays){
 		});
 	},500);
 
+	setTimeout(this.destroy.bind(this),this.fade * 1000);
+
 }
+
+Explosion.prototype.destroy = function(){
+	this.$ele.remove();
+};
 
 function ExplosionRay(ctx,height,width,angle,duration,color){
 	var i = 0,
-		frameLength = Math.max(Math.round(Math.random() * 50),1), // how long will pass between update renders
+		frameLength = Math.max(Math.round(Math.random() * MAX_DRAW_DELAY),1), // how long will pass between update renders
 		numFrames = duration / frameLength, // we want to keep the duration the amount of time passed in and vary the frames to fit
 		x = width / 2,
 		y = height / 2,
@@ -159,7 +172,7 @@ function ExplosionRay(ctx,height,width,angle,duration,color){
 	function updateRayPosition(x,y,opacity,momentum,when){
 		setTimeout(function(){
 			ctx.globalAlpha = opacity;
-			ctx.fillRect(x,y + (GRAVITY * momentum ) ,2,2);
+			ctx.fillRect(x + (WIND * momentum),y + (GRAVITY * momentum ) ,2,2);
 		},when);
 	}
 }
@@ -168,17 +181,53 @@ function LayeredExplosion(x,y){
 
 	// size of largest layer is between 300 and half of screen size
 	var fireworkSize = Math.max( Math.round(Math.random() * window.innerWidth * 0.5 ), 300),
-		numLayers = Math.ceil(Math.random() * 5), // firework can have between 1 and 5 layers
+		numLayers = Math.ceil(Math.random() * MAX_EXPLOSION_LAYERS), // firework can have between 1 and MAX_EXPLOSION_LAYERS layers
 		rays,layerSize,layerOffset;
 
 	// draw the layers
 	for(var i = 1; i <= numLayers; i++){
 		layerSize = fireworkSize * ( (i) / numLayers); // each layer is larger than the previous layer, working up to the full size
 		offset = layerSize / 2; // offset helps us draw from the middle
-		rays = Math.max(Math.round( Math.random() * 15),3); // each layer can have between 3 and 15 rays
+		rays = Math.max(Math.round( Math.random() * MAX_RAYS),3); // each layer can have between 3 and MAX_RAYS rays
 
 		new Explosion(x - offset, y - offset, layerSize, layerSize, rays);
 	}
 }
 
 var works = new FireworksCelebration().create().start();
+
+
+/*
+	Demo Stuff
+
+*/
+
+$('#gravity')
+	.val(GRAVITY)
+	.on('change',function(){
+		GRAVITY = this.value;
+	});
+
+$('#wind')
+	.val(WIND)
+	.on('change',function(){
+		WIND = this.value;
+	});
+
+$('#draw-delay')
+	.val(MAX_DRAW_DELAY)
+	.on('change',function(){
+		MAX_DRAW_DELAY = this.value;
+	});
+	
+$('#max-rays')
+	.val(MAX_RAYS)
+	.on('change',function(){
+		MAX_RAYS = this.value;
+	});
+	
+$('#max-layers')
+	.val(MAX_EXPLOSION_LAYERS)
+	.on('change',function(){
+		MAX_EXPLOSION_LAYERS = this.value;
+	});

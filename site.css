@@ -1,9 +1,3 @@
-body {
-	background: black;
-    height: 100%;
-    width: 100%;
-}
-
 .firework {
 	height: 10px;
 	width: 5px;
@@ -12,10 +6,28 @@ body {
 	border-top-left-radius: 50%;
 }
 
-.explosion {
+/*
+	For Demo
+*/
+
+body {
+	background: black;
+    height: 100%;
+    width: 100%;
+}
+
+.controls {
+	position: absolute;
+	bottom: 10px;
+	color: white;
+	opacity: .5;
+	padding: 10px;
+	z-index: 10;
+}
+.controls:hover {
 	opacity: 1;
-	-webkit-transition: opacity 4s ease-in, top 4s ease-in;
-	-moz-transition: opacity 4s ease-in, top 4s ease-in;
-	-ms-transition: opacity 4s ease-in, top 4s ease-in;
-	transition: opacity 4s ease-in, top 4s ease-in;
+}
+
+.controls input {
+	width: 40px;
 }
